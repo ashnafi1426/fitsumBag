@@ -21,6 +21,9 @@ WORKDIR /app
 # Copy FULL application code FIRST (before composer install)
 COPY . .
 
+# Create .env file if it doesn't exist
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | grep -v "post-autoload-dump\|artisan package:discover" || true
 

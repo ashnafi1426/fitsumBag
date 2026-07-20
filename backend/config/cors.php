@@ -22,6 +22,7 @@ return [
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:5173'),
         'https://royalleather.netlify.app',
+        'https://frontend-phi-five-91.vercel.app',
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:5175',
@@ -32,6 +33,7 @@ return [
 
     'allowed_origins_patterns' => [
         'https://*.netlify.app',
+        'https://*.vercel.app',
         'https://*.onchaintradepro.com',
     ],
 

@@ -11,11 +11,22 @@ class HeroImageController extends Controller
     // Public endpoint - Get all active hero images
     public function index()
     {
-        $images = HeroImage::where('is_active', true)
-            ->orderBy('sort_order', 'asc')
-            ->get();
+        try {
+            $images = HeroImage::where('is_active', true)
+                ->orderBy('sort_order', 'asc')
+                ->get();
 
-        return response()->json(['data' => $images]);
+            return response()->json(['data' => $images]);
+        } catch (\Exception $e) {
+            \Log::error('HeroImageController@index error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return response()->json([
+                'message' => 'Failed to fetch hero images',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // Admin endpoint - Get all hero images (including inactive)

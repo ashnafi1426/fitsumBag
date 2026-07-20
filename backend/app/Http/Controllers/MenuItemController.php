@@ -10,28 +10,39 @@ class MenuItemController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MenuItem::with('category')->where('is_available', true);
+        try {
+            $query = MenuItem::with('category')->where('is_available', true);
 
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
+            if ($request->has('category_id')) {
+                $query->where('category_id', $request->category_id);
+            }
+
+            if ($request->has('featured')) {
+                $query->where('is_featured', true);
+            }
+
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('name_amharic', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            $items = $query->orderBy('sort_order')->get();
+
+            return response()->json(['data' => $items]);
+        } catch (\Exception $e) {
+            \Log::error('MenuItemController@index error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return response()->json([
+                'message' => 'Failed to fetch menu items',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        if ($request->has('featured')) {
-            $query->where('is_featured', true);
-        }
-
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('name_amharic', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        $items = $query->orderBy('sort_order')->get();
-
-        return response()->json(['data' => $items]);
     }
 
     public function adminIndex(Request $request)

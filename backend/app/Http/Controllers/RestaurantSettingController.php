@@ -10,19 +10,30 @@ class RestaurantSettingController extends Controller
 {
     public function index()
     {
-        $settings = RestaurantSetting::first();
+        try {
+            $settings = RestaurantSetting::first();
 
-        if (!$settings) {
-            $settings = RestaurantSetting::create([
-                'name' => 'Royal Leather',
-                'tagline' => 'Crafted Excellence, Timeless Elegance',
-                'slug' => 'royal-leather',
-                'currency' => 'USD',
-                'language' => 'en',
+            if (!$settings) {
+                $settings = RestaurantSetting::create([
+                    'name' => 'Royal Leather',
+                    'tagline' => 'Crafted Excellence, Timeless Elegance',
+                    'slug' => 'royal-leather',
+                    'currency' => 'USD',
+                    'language' => 'en',
+                ]);
+            }
+
+            return response()->json(['data' => $settings]);
+        } catch (\Exception $e) {
+            \Log::error('RestaurantSettingController@index error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
+            return response()->json([
+                'message' => 'Failed to fetch settings',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json(['data' => $settings]);
     }
 
     public function update(Request $request)

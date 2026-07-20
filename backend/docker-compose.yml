@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=Royal Leather QR Menu
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:ZXMbm4yZ330tzsr5ukmX51om8T8mnhIOe7hp1AIcbQc=
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/app/database/database.sqlite
+      - FRONTEND_URL=http://localhost:5173
+    volumes:
+      - ./:/app
+      - /app/vendor
+      - /app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - fitsumbag
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: fitsum
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fitsumbag
+
+  # Frontend (optional - for testing together)
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: npm run dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - fitsumbag
+
+volumes:
+  postgres_data:
+
+networks:
+  fitsumbag:
+    driver: bridge

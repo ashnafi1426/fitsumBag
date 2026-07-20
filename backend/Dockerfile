@@ -52,5 +52,5 @@ COPY docker/supervisord.conf /etc/supervisord.conf
 # Expose port
 EXPOSE 8080
 
-# Clear caches, regenerate, run migrations, and start services
-CMD ["sh", "-c", "php artisan config:clear || true ; php artisan route:clear || true ; php artisan cache:clear || true ; php artisan view:clear || true ; php artisan config:cache ; php artisan route:cache ; php artisan migrate --force && supervisord -c /etc/supervisord.conf"]
+# Clear caches, run migrations, and start services (NO route caching - let Laravel handle routing)
+CMD ["sh", "-c", "php artisan config:clear || true ; php artisan route:clear || true ; php artisan cache:clear || true ; php artisan view:clear || true ; php artisan config:cache ; php artisan migrate --force && supervisord -c /etc/supervisord.conf"]

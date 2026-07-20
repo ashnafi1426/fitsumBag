@@ -8,16 +8,9 @@ use App\Http\Controllers\HeroImageController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\OrderRequestController;
 use App\Http\Controllers\RestaurantSettingController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-*/
-
-// Health check
+// Health check endpoint (no auth required)
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
@@ -26,25 +19,18 @@ Route::get('/health', function () {
     ]);
 });
 
-// Auth routes
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 });
-
-// Public routes (for customer-facing menu)
 Route::prefix('public')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/menu-items', [MenuItemController::class, 'index']);
     Route::get('/menu-items/{id}', [MenuItemController::class, 'show']);
     Route::get('/settings', [RestaurantSettingController::class, 'index']);
-
-    // Hero Images (public - for menu page carousel)
     Route::get('/hero-images', [HeroImageController::class, 'index']);
-
-    // About Gallery Images (public - for about us page gallery)
     Route::get('/about-gallery-images', [AboutGalleryImageController::class, 'index']);
 
     // Feedback submission (public - no auth required)

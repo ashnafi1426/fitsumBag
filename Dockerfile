@@ -33,6 +33,12 @@ RUN chown -R www-data:www-data /app
 # Generate Laravel key if needed
 RUN php artisan key:generate --force || true
 
+# Clear all caches
+RUN php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan cache:clear && \
+    php artisan view:clear
+
 # Production stage
 FROM base AS production
 
@@ -46,5 +52,5 @@ COPY backend/docker/supervisord.conf /etc/supervisord.conf
 # Expose port
 EXPOSE 8080
 
-# Run migrations and start services
-CMD ["sh", "-c", "php artisan migrate --force && supervisord -c /etc/supervisord.conf"]
+# Clear caches, regenerate, run migrations, and start services
+CMD ["sh", "-c", "php artisan config:clear && php artisan route:clear && php artisan cache:clear && php artisan view:clear && php artisan config:cache && php artisan route:cache && php artisan migrate --force && supervisord -c /etc/supervisord.conf"]

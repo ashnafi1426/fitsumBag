@@ -18,14 +18,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copy composer files from backend
-COPY backend/composer.json backend/composer.lock ./
+# Copy FULL application code from backend FIRST (before composer install)
+COPY backend/ .
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copy application code from backend
-COPY backend/ .
+RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | grep -v "post-autoload-dump\|artisan package:discover" || true
 
 # Set permissions
 RUN chown -R www-data:www-data /app

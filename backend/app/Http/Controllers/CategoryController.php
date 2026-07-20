@@ -10,12 +10,23 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('menuItems')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $categories = Category::with('menuItems')
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json(['data' => $categories]);
+            return response()->json(['data' => $categories]);
+        } catch (\Exception $e) {
+            \Log::error('CategoryController@index error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return response()->json([
+                'message' => 'Failed to fetch categories',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function adminIndex()

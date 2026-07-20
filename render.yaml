@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: fitsumbag-api
+    runtime: docker
+    region: frankfurt  # Change to your preferred region
+    plan: free
+    
+    envVars:
+      - key: APP_NAME
+        value: Royal Leather QR Menu
+      
+      - key: APP_ENV
+        value: production
+      
+      - key: APP_DEBUG
+        value: "false"
+      
+      - key: LOG_CHANNEL
+        value: stack
+      
+      - key: LOG_LEVEL
+        value: error
+      
+      - key: DB_CONNECTION
+        value: pgsql
+      
+      - key: DB_SSLMODE
+        value: require
+      
+      - key: SESSION_DRIVER
+        value: database
+      
+      - key: SESSION_LIFETIME
+        value: "120"
+      
+      - key: CACHE_STORE
+        value: database
+      
+      - key: MAIL_MAILER
+        value: log
+
+    # Reference sensitive vars from environment
+    envVarsFile:
+      - APP_KEY
+      - APP_URL
+      - DB_HOST
+      - DB_PORT
+      - DB_DATABASE
+      - DB_USERNAME
+      - DB_PASSWORD
+      - FRONTEND_URL
+      - SANCTUM_STATEFUL_DOMAINS
+
+  - type: web
+    name: fitsumbag-web
+    runtime: static
+    region: frankfurt
+    plan: free
+    
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    
+    envVars:
+      - key: VITE_API_URL
+        value: https://fitsumbag-api.onrender.com

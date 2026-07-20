@@ -5,11 +5,13 @@ FROM php:8.4-fpm-alpine AS base
 RUN apk add --no-cache \
     postgresql-client \
     postgresql-libs \
+    postgresql-dev \
     curl \
     git \
     nginx \
     supervisor \
-    && docker-php-ext-install pdo pdo_pgsql
+    && docker-php-ext-install pdo pdo_pgsql \
+    && apk del postgresql-dev
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

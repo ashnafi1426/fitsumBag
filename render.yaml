@@ -2,6 +2,7 @@ services:
   - type: web
     name: fitsumbag-api
     runtime: docker
+    dockerfilePath: backend/Dockerfile
     region: frankfurt  # Change to your preferred region
     plan: free
     

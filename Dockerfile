@@ -21,8 +21,8 @@ WORKDIR /app
 # Copy FULL application code from backend FIRST (before composer install)
 COPY backend/ .
 
-# Create .env file if it doesn't exist
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
+# Create .env file if it doesn't exist (use .env.example from backend)
+RUN if [ ! -f .env ]; then [ -f .env.example ] && cp .env.example .env || echo "APP_ENV=production" > .env; fi
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | grep -v "post-autoload-dump\|artisan package:discover" || true
